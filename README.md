@@ -29,10 +29,8 @@ git clone https://github.com/empiricaly/empirica.git
 Then `cd empirica` and run `meteor npm install` to update local npm dependencies. Now you can start the
 local webserver by running `meteor`. Then open a browser and navigate to http://localhost:3000/ to verify that all is working properly. You should see the following:
 
-![screenshot](/img/noExperiments.png)
-
 [ ![screenshot][ts-img] ]
 
-[ts-img]: /img/noExperiments.png
+[ts-img]: ./img/noExperiments.png
 
 
