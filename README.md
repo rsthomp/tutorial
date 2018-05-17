@@ -2,9 +2,9 @@ This documentation is being updated continually and is subject to change. If you
 
 
 # Basic Tutorial: Guess the Correlation Game
-[Empirica](https://empirica.ly/) is an open-source JavaScript framework for running multiplayer interactive experiments and games in the browser.This tutorial walks you through building a simple, but fully functional experiment that demonstrates many of the core features of Empirica. 
+[Empirica](https://empirica.ly/) is an open-source JavaScript framework for running multiplayer interactive experiments and games in the browser. This tutorial walks you through building a simple, but a fully functional experiment that demonstrates many of the core features of Empirica. 
 
-This will guide you step by step, from install and run a local instance to deploy and test your first Empirica experiment in real world. For the purposes of this tutorial, we will build a multiplayer and interactive 'Guess the Correlation' game. This is similar to the experiment we used for our paper: [The Wisdom of the Network: How Adaptive Networks Promote Collective Intelligence][1]
+This will guide you step by step, from installing and running a local instance to deploying and testing your first Empirica experiment in the real world. For this tutorial, we will build a multiplayer and interactive 'Guess the Correlation' game. This is similar to the experiment we used for our paper: [The Wisdom of the Network: How Adaptive Networks Promote Collective Intelligence][1]
  
  [1]: https://arxiv.org/abs/1805.04766
 
@@ -16,7 +16,7 @@ The intended audience for this tutorial is someone who:
 
 Although Empirica's backend was build using the [Meteor](https://www.meteor.com/) framework, you will only need to use pure JavaScript to develop the backend of your experiment. This will become clearer later on in the tutorial.
 
-The design philosophy of Empirica is to handle for you all the boring logistics and allowing you to get straight to what really interests you, whatever that may be. So it was built with the experiment developer in mind. Your time should not be spent in implementing reinventing the wheel every time you try to experiment with your ideas.
+The design philosophy of Empirica is to handle for you all the tedious logistics and allowing you to get straight to what interests you, whatever that may be. So it was built with the experiment developer in mind. Your time should not be spent in implementing reinventing the wheel every time you try to experiment with your ideas.
 
 
 All the code for the project that you will build during the tutorial can be found [here]. If you have questions, comments, or suggestions, please add a Github issue to that repo.
@@ -36,9 +36,22 @@ local webserver by running `meteor`. Then open a browser and navigate to http://
 
 [no-experiment-img]: ./img/noExperiments.png
 
-The default path `/` is what will the experiment participant see. In this case, if a participant would try to join your experiment now, they will be shown a message indicating that there are no available experiments. Let's change that. There is another path for the experiment designer to configure and monitor the experiment, which is `/admin`. So navigate to `http://localhost:3000/ admin`. You will be prompted to enter a username and password. The login credentials can be found in `/import/core/startup/server/bootstrap.js`. We highly recommend that you change the username and password in the `bootstrap.js' file and then reset your app using `meteor reset' from the terminal (you have to do `meteor reset` when you are inside the `empirica/` directory). After you are logged in, you should see the following:
+The default path `/` is what will the experiment participant see. In this case, if a participant would try to join your experiment now, they will be shown a message indicating that there are no available experiments.
 
+Let's change that. There is another path where the experiment designer can configure and monitor the experiment. Navigate to `http://localhost:3000/ admin`. You will be prompted to enter a username and password. The login credentials can be found in `/import/core/startup/server/bootstrap.js`.
+
+We highly recommend that you change the username and password in the `bootstrap.js' file and then reset your app using `meteor reset' from the terminal (you have to do `meteor reset` when you are inside the `empirica/` directory). After you are logged in, you should see the following:
 
 ![adminUI][no-adminUI-img]
 
 [no-adminUI-img]: ./img/adminUI.png
+
+
+Now go to ***conditions*** from the navigation bar. A condition (also called a factor, a dimension, or an independent variable) is a variable that will be manipulated by the experimenter. Empirica requires having the number of players as a mandatory condition. This is how many people will belong to the same instance of the game. All other conditions are experiment specific. 
+
+For now, let's try different values for the `playerCount`.  1 player (i.e., solo game) to a small group (3 players) to a larger group (12 players). We can add these values by clicking on the `+` next to the `playerCount` condition. 
+
+![conditions][conditions-img]
+
+[conditions-img]: ./img/conditions.png
+
