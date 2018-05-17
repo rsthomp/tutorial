@@ -31,5 +31,8 @@ local webserver by running `meteor`. Then open a browser and navigate to http://
 
 ![screenshot](/img/noExperiments.png)
 
+[ ![screenshot][ts-img] ]
+
+[ts-img]: /img/noExperiments.png
 
 
