@@ -233,7 +233,7 @@ So, in the guess the correlation game for each round (i.e., for each task or sca
 3. stage three (outcome): they see the outcome, which includes the correct score, and the scores of the neibhors. 
 
 So let's update the `init.js` file to reflect those changes:
-```
+```javascript
     //only add the "interactive" stage to the round if the game has social interaction
     if (treatment.neighborsCount > 0) {
       stages.push({
