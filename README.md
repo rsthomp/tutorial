@@ -131,7 +131,7 @@ However, to develop the actual experience of the game, you will only be interest
 All other folders contain `core` Empirica code, which you should not need to change in the vast majority of cases.
 
 
-## Adding a condition: number of neighbors 
+### Adding a condition: number of neighbors 
 Now, let's first add the condition that controls the number of neighbors when in the group condition. To do this, go to `imports/experiment/server/conditions.js` and add the `neighborsCount` condition, so you have the following code:
 ```
 import SimpleSchema from "simpl-schema";
@@ -174,7 +174,7 @@ You should have something like this:
 As you can see, you can easy ***cross your conditions*** (i.e., two conditions are crossed if every level of one occurs with every level of the other in the experiment) or ***nest nest your conditions*** (i.e., A condition "A" is nested within another condition "B" if the levels or values of "A" are different for every level or value of "B"). Note: in the future version of Empirica, we will probably rename ***conditions*** to ***factors*** as recommended by our advisors.
 
 
-## Adding the task information
+### Adding the task information
 Now, let's add some task data. In our case, the task is the correlation plots. So, in `imports/experiment/server/constants.js` let's add the following task information: 
 
 ```
@@ -206,4 +206,53 @@ export const taskData = [
   }
 ];
 ```
-and let's add the images  of the plots (you can download them from [here](tasks.zip) and don't forget to unzip) by placing the `/task` folder in `public/experiment/`. 
+and let's add the images  of the plots (you can download them from [here](tasks.zip) and don't forget to unzip) by placing the `/task` folder in `public/experiment/`so now you have `public/experiment/tasks/`
+
+### Initiating the game
+In `experiment/server/game/init.js` we can make the players more interesting by adding more attributes to them. Let's change `score` to `comulativeScore`, and add random `neibhorsIds` only when the treatment contains a social condition: 
+
+```
+  init(treatment, players) {
+    const playerIds = _.pluck(players, "_id");
+    players.forEach((player, i) => {
+      const alterIds = _.sample(
+        _.without(playerIds, player._id),
+        treatment.altersCount
+      );
+      player.set("avatar", `/avatars/jdenticon/${player._id}`);
+      player.set("difficulty", difficulties[i % 3]); //equal number of difficulties
+      player.set("alterIds", alterIds);
+      player.set("cumulativeScore", 0);
+    });
+    .....
+```
+
+So, in the guess the correlation game for each round (i.e., for each task or scatter plot) there are three stages:
+1. stage one (response): the participants makes a guess about the true correlation independently
+2. stage two (interactive): in the case of social interactions, then they can observe the guesses of their neibhors. 
+3. stage three (outcome): they see the outcome, which includes the correct score, and the scores of the neibhors. 
+
+So let's update the `init.js` file to reflect those changes:
+```
+    //only add the "interactive" stage to the round if the game has social interaction
+    if (treatment.neighborsCount > 0) {
+      stages.push({
+        name: "interactive",
+        displayName: "Interactive Response",
+        durationInSeconds: 30
+      });
+    }
+
+    //always add the "outcome" stage to the round
+    stages.push({
+      name: "outcome",
+      displayName: "Round Outcome",
+      durationInSeconds: 15
+    });
+
+    rounds.push({
+      stages,
+      task: taskData[i]
+    });
+  });
+```
