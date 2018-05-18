@@ -92,7 +92,7 @@ Now the batch is created. All you have to do is to click the `start` button, and
 
 ![consent][consent-img]
 
-[batches-img]: ./img/consent.png
+[consent-img]: ./img/consent.png
 
 Note that in the header there are experiment designer helpers. They only appear in development. Once you deploy the actual experiment. They will disappear. For example, clicking on `New Player` will open another tab in the same browser, but Empirica will treat it as a new player. This will allow you to easy 'pretend' to be more than one player when designing your game (e.g., handy to test interactions, etc). 
 
@@ -101,39 +101,35 @@ Well, just go ahead and try playing few games, go to the admin page and play aro
  
 ## Simple guess the correlation game
 
-In our paper [The Wisdom of the Network: How Adaptive Networks Promote Collective Intelligence](https://arxiv.org/abs/1805.04766) we developed a web-based experiment that allows us to identify the role of dynamic networks in fostering an adaptive ‘wisdom of crowds.’ Participants (n = 719) from Amazon Mechanical Turk. Participants engaged in a sequence of 20 estimation
+In our paper [The Wisdom of the Network](https://arxiv.org/abs/1805.04766), we developed a web-based experiment that allowed us to identify the role of dynamic networks in fostering an adaptive "wisdom of crowds". Participants (n = 719) from Amazon Mechanical Turk. Participants engaged in a sequence of 20 estimation
 tasks. Each task consisted of estimating the correlation of a scatter plot, and monetary prizes were awarded in proportion to performance. Participants were randomly allocated to groups of 12 (n = 60 groups), and each group was randomized to one of three treatment conditions: a solo treatment, where each individual solved the sequence of tasks in isolation; a static treatment, in which participants were randomly placed in static communication networks; and a dynamic treatment, in which participants at each round were allowed to select up to three neighbors to 3 communicate with. 
 
-In this tutorial, we will stick to the first two treatments (solo players, and groups in static communication networks). However, for the second treatment, we will ad a condition that controls how many other neighbors they can communicate with. A more elaborate and advanced version of the game can be found [here]. 
+In this tutorial, we will stick to the first two treatments (solo players, and groups in static communication networks). However, for the second treatment, we will add another condition that controls how many other neighbors they can communicate with. A more elaborate and advanced version of the game can be found [here]. 
 
 ### The file structure
-Empirica was built with the experiement developer in mind. The core of Empirica has been seperated from the experiment. The folder structure reflects this organization method.
+Empirica was built with the experiement developer in mind. The core of Empirica has been seperated from the experiment. The folder structure reflects this organization method. While from the admin dashboard we were allowed to specify parameters about the experiment without the need for any code to be written, including things like: conditions (independent variables), treatments (combination of values of the conditions) the lobby logic, randomization procedure, and participants' authorization rules.
 
-To develop a new game, you will only be interested in a couple of folders:
+However, to develop the actual experience of the game, you will only be interested in a couple of folders:
 
-- `imports/experiment`
-- `public/experiment`
+- `imports/experiment`: Here the code for the actual experience using four objects (i.e., game, round, stage, player) with helper functions that makes it super easy to control the experience of the participants
+  - `experiment/client`: Everything about the interface.
+    -  `/client/game`: The component of the interface. By default, we provide examples of what can go there for typical experiments.
+    -  `/client/intro`: Things that happen before the actual experience. Things like the consent form, instructions, and attention checks (i.e., quizes).
+    -  `/client/outro`: The exit survey and potentially a thank you message.
+    -  `/client/index.js`: Loading the client files. In most cases, you will not need to use it, but it might be a good idea to have a look at it.
+    -  `/client/style.less`: The styling of the experiment interface. You can change this with anything you like.
+  - `experiment/server`: The server side stuff using similar four objects (i.e., game, round, stage, player).
+  	- `server/game`:
+  	  - `conditions.js`: The conditions that you saw in the admin UI. This will be fully controled from the interface in future versions. 
+  	  - `init.js`: Initiating the game. This returns an array of rounds and players.
+  	  - `callbacks.js`: What happens at the begining and end of the rounds and between the stages.
+  	- `bots.js`: specifying the behavior of artifical bots. We will not use this in this tutorial.
+  	- `index.js`: Loading the server files. In most cases, you will not need to use it, but it might be a good idea to have a look at it.
 
 All other folders contain `core` Empirica code, which you should not need to change in the vast majority of cases.
 
-Let's have a look at the inside of the first path `imports/experiment`, where you'll spend most of your time:
-- `imports/experiment`: 
-  - `experiment/client`: 
-    -  `/client/game`:
-    -  `/client/intro`:
-    -  `/client/outro`:
-    -  `/client/index.js`:
-    -  `/client/style.less`:
-  - `experiment/server`:
-  	- `server/game`:
-  	  - `callbacks.js`:
-  	  - `conditions.js`:
-  	  - `init.js`:
-  	- `bots.js`
-  	- `index.js`
 
-
-## adding a conditon: number of neighbors 
+## Adding a conditon: number of neighbors 
 Now, let's first add the condition that controls the number of neighbors when in the group condition. To do this, 
 
 
