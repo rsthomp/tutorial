@@ -43,7 +43,7 @@ local webserver by running `meteor`. Then open a browser and navigate to http://
 
 The default path `/` is what will the experiment participant see. In this case, if a participant would try to join your experiment now, they will be shown a message indicating that there are no available experiments.
 
-Let's change that. There is another path where the experiment designer can configure and monitor the experiment. Navigate to `http://localhost:3000/admin`. You will be prompted to enter a username and password. The login credentials can be found in `/import/core/startup/server/bootstrap.js`.
+Let's change that. There is another path where the experiment designer can configure and monitor the experiment. Navigate to `http://localhost:3000/admin`. You will be prompted to enter a username and password. The login credentials can be found in `/imports/core/startup/server/bootstrap.js`.
 
 We highly recommend that you change the username and password in the `bootstrap.js' file and then reset your app using `meteor reset' from the terminal (you have to do `meteor reset` when you are inside the `empirica/` directory). After you are logged in, you should see the following:
 
