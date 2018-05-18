@@ -113,7 +113,7 @@ Empirica was built with the experiment developer in mind. The core of Empirica h
 
 However, to develop the actual experience of the game, you will only be interested in a couple of folders:
 
-- `imports/experiment`: Here the code for the actual experience using four objects (i.e., `game`, `round`, `stage`, `player`) with helper functions that makes it super easy to control the experience of the participants
+- `imports/experiment`: Here the code for the actual experience using four objects (i.e., `game`, `round`, `stage`, `player`) with helper functions that make it super easy to control the experience of the participants
   - `experiment/client`: Everything about the interface.
     -  `/client/game`: The component of the interface. By default, we provide examples of what can go there for typical experiments.
     -  `/client/intro`: Things that happen before the actual experience: things like the consent form, instructions, and attention checks (i.e., quizzes).
@@ -153,7 +153,7 @@ export const conditions = {
 };
 ```
 
-Now, if you navigate to `http://localhost:3000/admin/conditions` you will see that there is an additional condition called `neighborsCount`. Let's add value to it so we have the following three levels:
+Now, if you navigate to `http://localhost:3000/admin/conditions` you will see that there is an additional condition called `neighborsCount`. Let's add value to it, so we have the following three values (or levels):
 
 ![neighborsCount][neighborsCount-img]
 
@@ -171,7 +171,7 @@ You should have something like this:
 
 [neibhorTreatments-img]: ./img/neibhorTreatments.png
 
-As you can see, you can easy ***cross your conditions*** (i.e., two conditions are crossed if every level of one occurs with every level of the other in the experiment) or ***nest nest your conditions*** (i.e., A condition "A" is nested within another condition "B" if the levels or values of "A" are different for every level or value of "B"). Note: in the future version of Empirica, we will probably rename ***conditions*** to ***factors*** as recommended by our advisors.
+As you can see, you can easily ***cross your conditions*** (i.e., two conditions are crossed if every level of one occurs with every level of the other in the experiment) or ***nest nest your conditions*** (i.e., A condition "A" is nested within another condition "B" if the levels or values of "A" are different for every level or value of "B"). Note: in the future version of Empirica, we will probably rename ***conditions*** to ***factors*** as recommended by our advisors.
 
 
 ### Adding the task information
@@ -228,9 +228,9 @@ In `experiment/server/game/init.js` we can make the players more interesting by 
 ```
 
 So, in the guess the correlation game for each round (i.e., for each task or scatter plot) there are three stages:
-1. stage one (response): the participants makes a guess about the true correlation independently
-2. stage two (interactive): in the case of social interactions, then they can observe the guesses of their neibhors. 
-3. stage three (outcome): they see the outcome, which includes the correct score, and the scores of the neibhors. 
+1. stage one (response): the participants make a guess about the true correlation independently
+2. stage two (interactive): in the case of social interactions, then they can observe the guesses of their neighbors. 
+3. stage three (outcome): they see the outcome, which includes the correct score, and the scores of the neighbors. 
 
 So let's update the `init.js` file to reflect those changes:
 ```javascript
@@ -274,14 +274,14 @@ export const onStageEnd = (game, round, stage, players) => {
       // If no guess given, score is 0
       const score = !guess
         ? 0
-        : Math.round(1 - Math.abs(correctAnswer - guess));
+        : Math.round((1 - Math.abs(correctAnswer - guess)) * 100);
       player.round.set("score", score);
     });
   }
 };
 ```
 
-After the round ends, we want to add the round score to the comulative score of the player. So, let's update `onRoundEnd(.)` to the following:
+After the round ends, we want to add the round score to the cumulative score of the player. So, let's update `onRoundEnd(.)` to the following:
 
 ```javascript
 export const onRoundEnd = (game, round, players) => {
@@ -294,6 +294,180 @@ export const onRoundEnd = (game, round, players) => {
 };
 ```
 
-Notice that we save the `cumulativeScore` at the player level, while we save the `score` at the round level. Therefore, in our database, we will have a `score` per round per player, and one cumulativeScore per player per game. 
+Notice that we save the `cumulativeScore` at the player level, while we save the `score` at the round level. Therefore, in our database, we will have a `score` per round per player, and one `cumulativeScore` per player per game. 
+
+Now, we are done with everything we need with the backend, we move to the frontend to give the users the experience they expect.
+
+### Social Exposure only when there is social interaction
+Now that we have three (or two in case of the solo players) stages, we should control what the player sees in each stage. So, to show the social exposure only during the interactive stage, we need to update the code in `/imports/experiment/client/game/Round.jsx` to reflect that:
+
+```react
+export default class Round extends React.Component {
+  render() {
+    const { round, stage, player, game } = this.props;
+
+    return (
+      <div className="round">
+        <div className="content">
+          <PlayerProfile player={player} stage={stage} game={game} />
+          <Task round={round} stage={stage} player={player} game={game} />
+          {game.treatment.neighborsCount > 0 && stage.name === "interactive" ? (
+            <SocialExposure stage={stage} player={player} game={game} />
+          ) : null}{" "}
+        </div>
+      </div>
+    );
+  }
+}
+```
+
+### Displaying the task
+We need to display the correct task (i.e., correlation plot) in each round. So let's go to `/imports/experiment/client/game/TaskStimulus.jsx` and ensure that we display the task path from the round data. To make things pretty, we will make the scatter plot transparent during the round outcome stage
+
+```react
+export default class TaskStimulus extends React.Component {
+  render() {
+    const { round, stage } = this.props;
+
+    //make the image transparent if it is round outcome
+    const classes = ["task-image"];
+    if (stage.name === "outcome") {
+      classes.push("transparent");
+    }
+
+    const taskPath = round.get("task").path; //getting the task data
+
+    return (
+      <div className="task-stimulus">
+        <img src={taskPath} className={classes.join(" ")} />
+      </div>
+    );
+  }
+}
+
+```
+
+### Customizing the task response
+In the guess the correlation game, the slider is the main way of inputting data from the player. However, we want to show the correct answer and disable the slider during the round outcome stage. While this block of code might look involved, it is not! Just small changes to the current default slider such that it looks like this:
+```react
+import { Slider } from "@blueprintjs/core";
+import React from "react";
+
+export default class TaskResponse extends React.Component {
+  handleChange = num => {
+    const { stage, player } = this.props;
+    if (stage.name !== "outcome") {
+      const guess = Math.round(num * 100) / 100;
+      //we want to store the guess at the round and stage level
+      //this is so we can compare their final answer with their initial answer in the analysis
+      player.stage.set("guess", guess);
+      player.round.set("guess", guess);
+    }
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    this.props.player.stage.submit();
+  };
+  
+
+  renderSlider(player, isOutcome) {
+    const value = player.round.get("guess");
+    return (
+      <div className={`pt-form-content ${value === undefined ? "empty" : ""}`}>
+        <Slider
+          min={0}
+          max={1}
+          stepSize={0.01}
+          labelStepSize={0.25}
+          onChange={this.handleChange}
+          value={value}
+          showTrackFill={false}
+          disabled={isOutcome} //disable the slider when it is round outcome
+        />
+      </div>
+    );
+  }
+
+  renderFeedback(player, round) {
+    //show the final guess, the correct answer, and the score increment
+    return (
+      <table className="pt-table  pt-html-table pt-html-table-bordered">
+        <thead>
+          <tr>
+            <th>Your guess</th>
+            <th>Actual correlation</th>
+            <th>Score increment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="center">
+              {player.round.get("guess") || "No guess given"}
+            </td>
+            <td>{round.get("task").correctAnswer}</td>
+            <td>+{player.round.get("score")}</td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+
+  render() {
+    const { stage, round, player } = this.props;
+
+    //if the player already submitted, don't show the slider or submit button
+    if (player.stage.submitted) {
+      return (
+        <div className="task-response">
+          <div className="pt-callout pt-icon-automatic-updates">
+            <h5>Waiting on other players...</h5>
+            Please wait until all players are ready
+          </div>
+        </div>
+      );
+    }
+
+    const isOutcome = stage.name === "outcome";
+
+    return (
+      <div className="task-response">
+        <form onSubmit={this.handleSubmit}>
+          <div className="pt-form-group">
+            {this.renderSlider(player, isOutcome)}
+          </div>
+
+          {isOutcome ? this.renderFeedback(player, round) : null}
+
+          <div className="pt-form-group">
+            <button type="submit" className="pt-button pt-icon-tick pt-large">
+              {isOutcome ? "Next" : "Submit"}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+}
+``` 
+I will improve the `TaskStimulus.js` part of the tutorial soon to highlight only the changes.
+
+### Social Exposure
+During the interactive stage, we show the player his neighbors answers in realtime. While this works by default (as part of the default Empirica app), however, recall that we changed the player main input from `value` to `guess` so we need to reflect that in the `SocialExposure.jsx` componenet. So all we need to change the following line `const value = otherPlayer.round.get("value") || 0;
+` in `renderSocialInteraction(otherPlayer)`  with `const value = otherPlayer.round.get("guess") || 0;`. 
+
+### Player Profile
+While the default app displayed the score as part of the player profile, we want to display the `cumulativeScore` for the guess the correlation game. So let's go ahead and change  `<span>{player.get("score") || 0}</span>` with `<span>{player.get("cumulativeScore") || 0}</span>` in `PlayerProfile.jsx`.
 
 
+## We are almost done!
+Now just navigate in the browser to `http://localhost:3000/admin`, create a new batch like we did before, add to the batch the new treatments, start the batch! That's it, if you go to  `http://localhost:3000` it will just work! you have an experiment with three treatments. Players will be randomized and the experience will render correctly!
+
+## things to add
+1. adding bots
+2. exporting data
+3. deployment
+4. live example
+5. add the tutorial code
+
+# Concluding remarks
