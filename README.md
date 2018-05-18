@@ -38,7 +38,7 @@ local webserver by running `meteor`. Then open a browser and navigate to http://
 
 The default path `/` is what will the experiment participant see. In this case, if a participant would try to join your experiment now, they will be shown a message indicating that there are no available experiments.
 
-Let's change that. There is another path where the experiment designer can configure and monitor the experiment. Navigate to `http://localhost:3000/ admin`. You will be prompted to enter a username and password. The login credentials can be found in `/import/core/startup/server/bootstrap.js`.
+Let's change that. There is another path where the experiment designer can configure and monitor the experiment. Navigate to `http://localhost:3000/admin`. You will be prompted to enter a username and password. The login credentials can be found in `/import/core/startup/server/bootstrap.js`.
 
 We highly recommend that you change the username and password in the `bootstrap.js' file and then reset your app using `meteor reset' from the terminal (you have to do `meteor reset` when you are inside the `empirica/` directory). After you are logged in, you should see the following:
 
@@ -47,11 +47,33 @@ We highly recommend that you change the username and password in the `bootstrap.
 [no-adminUI-img]: ./img/adminUI.png
 
 
-Now go to ***conditions*** from the navigation bar. A condition (also called a factor, a dimension, or an independent variable) is a variable that will be manipulated by the experimenter. Empirica requires having the number of players as a mandatory condition. This is how many people will belong to the same instance of the game. All other conditions are experiment specific. 
+### setting up your experiment configurations
+Now go to ***conditions*** from the navigation bar. A condition (also called a factor, a dimension, or an independent variable) is a variable that will be manipulated in the experiment. Empirica requires having the number of players as a mandatory condition. This is how many people will belong to the same instance of the game. All other conditions are experiment specific. 
 
-For now, let's try different values for the `playerCount`.  1 player (i.e., solo game) to a small group (3 players) to a larger group (12 players). We can add these values by clicking on the `+` next to the `playerCount` condition. 
+For now, let's try different values for the `playerCount`.  1 player (i.e., solo game) to a small group (3 players) to a larger group (12 players). We can add these values by clicking on the `+` next to the `playerCount` condition. You shuld have something like this (it can be different lables & values).
 
 ![conditions][conditions-img]
 
 [conditions-img]: ./img/conditions.png
+
+
+Now go to ***Treatments*** from the navigation bar. A treatment is a combination of conditions. At the moment, we have only one condition in our design, so there is not much to do here. Typically, as we will see later in this tutorial, you will have more than one condition in your experiment (say, the number of following). For now, let's choose one of our condition values. 
+
+![treatments][treatments-img]
+
+[treatments-img]: ./img/treatments.png
+
+
+Now go to ***Lobby Configuration*** from the navigation bar. A lobby has the purpose of monitoring the amount of time players are waiting (within the same instance or game) and starting the actual game experience when certain criteria are met. These criteria include:
+- Certain number of players is simultaneously connected.
+- The maximum waiting time has expired (starting the game with groups of any siz
+
+You can choose any lobby configurations here. We will go into the details and implications of different choises in the documentation.
+
+![lobby][lobby-img]
+
+[lobby-img]: ./img/lobby.png
+
+
+
 
