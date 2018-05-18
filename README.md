@@ -175,40 +175,36 @@ As you can see, you can easy ***cross your conditions*** (i.e., two conditions a
 
 
 ## Adding the task information
-Now, let's add some task data. In our case, the task is the correlation plots. So, in `constants.js` let's add the following task information: 
+Now, let's add some task data. In our case, the task is the correlation plots. So, in `imports/experiment/server/constants.js` let's add the following task information: 
 
 ```
+// The task data can go here
 export const taskData = [
   {
     _id: 0,
     correctAnswer: 0.09,
-    path: "/games/task/tasks/0.png",
-    
+    path: "/games/task/tasks/0.png"
   },
   {
     _id: 1,
     correctAnswer: 0.78,
-    path:  "/games/task/tasks/1.png"
+    path: "/games/task/tasks/1.png"
   },
   {
     _id: 2,
     correctAnswer: 0.91,
-    path:  "/games/task/tasks/2.png",
+    path: "/games/task/tasks/2.png"
   },
   {
     _id: 3,
     correctAnswer: 0.47,
-    path:  "/games/task/tasks/3.png",
+    path: "/games/task/tasks/3.png"
   },
   {
     _id: 4,
     correctAnswer: 0.08,
-    path:  "/games/task/tasks/4.png",
-  },
-  {
-    _id: 5,
-    correctAnswer: 0.27,
-    path:  "/games/task/tasks/5.png",
+    path: "/games/task/tasks/4.png"
   }
 ];
 ```
+and let's add the images (you can download them from [here]()) and place them in `public/experiment/`
