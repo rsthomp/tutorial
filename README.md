@@ -256,3 +256,44 @@ So let's update the `init.js` file to reflect those changes:
     });
   });
 ```
+
+### The callbacks (what to do between rounds and stages)
+So, we need to compute the score for each player after their initial guess and after their interactive guess. So in `experiment/server/game/callbacks.js` let's update the function `onStageEnd` to the following:
+
+```javascript
+export const onStageEnd = (game, round, stage, players) => {
+  const isSocial = game.treatment.neighborsCount > 0;
+  const isResponseStage = stage.name === "response";
+  const isInteractiveStage = stage.name === "interactive";
+
+  if ((isResponseStage && !isSocial) || (isInteractiveStage && isSocial)) {
+    const correctAnswer = round.get("task").correctAnswer; //the correct answer for this round
+    //update the score for each player
+    players.forEach(player => {
+      const guess = player.round.get("guess");
+      // If no guess given, score is 0
+      const score = !guess
+        ? 0
+        : Math.round(1 - Math.abs(correctAnswer - guess));
+      player.round.set("score", score);
+    });
+  }
+};
+```
+
+After the round ends, we want to add the round score to the comulative score of the player. So, let's update `onRoundEnd(.)` to the following:
+
+```javascript
+export const onRoundEnd = (game, round, players) => {
+  //update the cumulative Score for everyone after the round
+  players.forEach(player => {
+    const currentScore = player.get("cumulativeScore");
+    const roundScore = player.round.get("score");
+    player.set("cumulativeScore", Math.round(currentScore + roundScore));
+  });
+};
+```
+
+Notice that we save the `cumulativeScore` at the player level, while we save the `score` at the round level. Therefore, in our database, we will have a `score` per round per player, and one cumulativeScore per player per game. 
+
+
