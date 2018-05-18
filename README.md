@@ -80,7 +80,7 @@ Let's choose the assignment method `complete`, which allows you to decide how ma
 
 ![batches][batches-img]
 
-[lobby-img]: ./img/batches.png
+[batches-img]: ./img/batches.png
 
 
 Now the batch is created. All you have to do is to click the `start` button and the games in it will be activated. This means that the main `/` path will be activated and participants will see the consent form.
