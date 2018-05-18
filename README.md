@@ -348,7 +348,8 @@ export default class TaskStimulus extends React.Component {
 ```
 
 ### Customizing the task response
-In the guess the correlation game, the slider is the main way of inputting data from the player. However, we want to show the correct answer and disable the slider during the round outcome stage. While this block of code might look involved, it is not! Just small changes to the current default slider such that it looks like this:
+In the guess the correlation game, the slider is the main way of inputting data from the player. However, we want to show the correct answer and disable the slider during the round outcome stage.
+Let's go to `/imports/experiment/client/game/TaskResponse.jsx`. While this block of code might look involved, it is not! Just small changes to the current default slider such that it looks like this:
 ```javascript
 import { Slider } from "@blueprintjs/core";
 import React from "react";
