@@ -133,7 +133,7 @@ All other folders contain `core` Empirica code, which you should not need to cha
 
 ### Adding a condition: number of neighbors 
 Now, let's first add the condition that controls the number of neighbors when in the group condition. To do this, go to `imports/experiment/server/conditions.js` and add the `neighborsCount` condition, so you have the following code:
-```
+```javascript
 import SimpleSchema from "simpl-schema";
 
 export const conditions = {
@@ -177,7 +177,7 @@ As you can see, you can easy ***cross your conditions*** (i.e., two conditions a
 ### Adding the task information
 Now, let's add some task data. In our case, the task is the correlation plots. So, in `imports/experiment/server/constants.js` let's add the following task information: 
 
-```
+```javascript
 export const taskData = [
   {
     _id: 0,
@@ -211,7 +211,7 @@ and let's add the images  of the plots (you can download them from [here](tasks.
 ### Initiating the game
 In `experiment/server/game/init.js` we can make the players more interesting by adding more attributes to them. Let's change `score` to `comulativeScore`, and add random `neibhorsIds` only when the treatment contains a social condition: 
 
-```
+```javascript
   init(treatment, players) {
     const playerIds = _.pluck(players, "_id");
     players.forEach((player, i) => {
