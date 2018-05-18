@@ -57,7 +57,7 @@ For now, let's try different values for the `playerCount`.  1 player (i.e., solo
 [conditions-img]: ./img/conditions.png
 
 
-Now go to ***Treatments*** from the navigation bar. A treatment is a combination of conditions. At the moment, we have only one condition in our design, so there is not much to do here. Typically, as we will see later in this tutorial, you will have more than one condition in your experiment (say, the number of following). For now, let's choose one of our condition values. 
+Now go to ***Treatments*** from the navigation bar. A treatment is a combination of conditions. At the moment, we have only one condition in our design, so there is not much to do here. Typically, as we will see later in this tutorial, you will have more than one condition in your experiment (say, the number of following). For now, let's add two treatments (e.g., 1 solo and then add another treatment with small_group). 
 
 ![treatments][treatments-img]
 
@@ -66,14 +66,23 @@ Now go to ***Treatments*** from the navigation bar. A treatment is a combination
 
 Now go to ***Lobby Configuration*** from the navigation bar. A lobby has the purpose of monitoring the amount of time players are waiting (within the same instance or game) and starting the actual game experience when certain criteria are met. These criteria include:
 - Certain number of players is simultaneously connected.
-- The maximum waiting time has expired (starting the game with groups of any siz
+- The maximum waiting time has expired (cancelling the game, starting the game with groups of any size, or adding artificial players).
 
-You can choose any lobby configurations here. We will go into the details and implications of different choises in the documentation.
+You can choose any lobby configurations at this time. We will go into the details and implications of different choices in the documentation.
 
 ![lobby][lobby-img]
 
 [lobby-img]: ./img/lobby.png
 
+We are almost done configuring our experiment. Now go to the ***Batches*** from the navigation bar. A batch is a group of games. The batch defines what treatments will be active, how many of each, and the randomization method. Once all of the games in a batch are consumed (i.e., all games in the batch have started), anyone that goes to the experiment link, will be shown the message 'No experiments available.'
 
+Let's choose the assignment method `complete`, which allows you to decide how many games of each treatment do you want. This is unlike the `simple` assignment where you only specify the total number of games, and Empirica will flip a coin for each player as they join. In the `simple` assigment case you are not guranteed the same number of games across treatments. More about this in the randomization section in the documentation (coming soon!).
+
+![batches][batches-img]
+
+[lobby-img]: ./img/batches.png
+
+
+Now the batch is created. All you have to do is to click the `start` button and the games in it will be activated. This means that the main `/` path will be activated and participants will see the consent form.
 
 
