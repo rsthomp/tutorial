@@ -1,4 +1,6 @@
-This documentation is being updated continually and is subject to change. If you see anything missing, use the Edit on GitHub button at the top right of every page to suggest improvements.
+This tutorial is being updated continually and is subject to change. If you see anything missing, use the Edit on GitHub button at the top right of every page to suggest improvements. 
+
+Note: at the moment we use Game and Experiment almost interchangeably. Soon, this will be fixed.
 
 
 # Basic Tutorial: Guess the Correlation Game
@@ -107,33 +109,106 @@ tasks. Each task consisted of estimating the correlation of a scatter plot, and 
 In this tutorial, we will stick to the first two treatments (solo players, and groups in static communication networks). However, for the second treatment, we will add another condition that controls how many other neighbors they can communicate with. A more elaborate and advanced version of the game can be found [here]. 
 
 ### The file structure
-Empirica was built with the experiement developer in mind. The core of Empirica has been seperated from the experiment. The folder structure reflects this organization method. While from the admin dashboard we were allowed to specify parameters about the experiment without the need for any code to be written, including things like: conditions (independent variables), treatments (combination of values of the conditions) the lobby logic, randomization procedure, and participants' authorization rules.
+Empirica was built with the experiment developer in mind. The core of Empirica has been separated from the experiment. The folder structure reflects this organization method. While from the admin dashboard we were allowed to specify parameters about the experiment without the need for any code to be written, including things like: conditions (independent variables), treatments (combination of values of the conditions) the lobby logic, randomization procedure, and participants' authorization rules.
 
 However, to develop the actual experience of the game, you will only be interested in a couple of folders:
 
-- `imports/experiment`: Here the code for the actual experience using four objects (i.e., game, round, stage, player) with helper functions that makes it super easy to control the experience of the participants
+- `imports/experiment`: Here the code for the actual experience using four objects (i.e., `game`, `round`, `stage`, `player`) with helper functions that makes it super easy to control the experience of the participants
   - `experiment/client`: Everything about the interface.
     -  `/client/game`: The component of the interface. By default, we provide examples of what can go there for typical experiments.
-    -  `/client/intro`: Things that happen before the actual experience. Things like the consent form, instructions, and attention checks (i.e., quizes).
+    -  `/client/intro`: Things that happen before the actual experience: things like the consent form, instructions, and attention checks (i.e., quizzes).
     -  `/client/outro`: The exit survey and potentially a thank you message.
     -  `/client/index.js`: Loading the client files. In most cases, you will not need to use it, but it might be a good idea to have a look at it.
     -  `/client/style.less`: The styling of the experiment interface. You can change this with anything you like.
-  - `experiment/server`: The server side stuff using similar four objects (i.e., game, round, stage, player).
-  	- `server/game`:
-  	  - `conditions.js`: The conditions that you saw in the admin UI. This will be fully controled from the interface in future versions. 
-  	  - `init.js`: Initiating the game. This returns an array of rounds and players.
-  	  - `callbacks.js`: What happens at the begining and end of the rounds and between the stages.
-  	- `bots.js`: specifying the behavior of artifical bots. We will not use this in this tutorial.
-  	- `index.js`: Loading the server files. In most cases, you will not need to use it, but it might be a good idea to have a look at it.
+  - `experiment/server`: The server-side stuff using similar four objects (i.e., game, round, stage, player).
+      - `server/game`: the files that contain the logic of the game
+        - `conditions.js`: The conditions that you saw in the admin UI. This will be fully controlled from the interface in future versions. 
+        - `init.js`: Initiating the game. This returns an array of rounds and players.
+        - `callbacks.js`: What happens at the beginning and end of the rounds and between the stages.
+      - `bots.js`: specifying the behavior of artificial bots. We will not use this in this tutorial.
+      - `index.js`: Loading the server files. In most cases, you will not need to use it, but it might be a good idea to have a look at it.
 
 All other folders contain `core` Empirica code, which you should not need to change in the vast majority of cases.
 
 
-## Adding a conditon: number of neighbors 
-Now, let's first add the condition that controls the number of neighbors when in the group condition. To do this, 
+## Adding a condition: number of neighbors 
+Now, let's first add the condition that controls the number of neighbors when in the group condition. To do this, go to `imports/experiment/server/conditions.js` and add the `neighborsCount` condition, so you have the following code:
+```
+import SimpleSchema from "simpl-schema";
+
+export const conditions = {
+  playerCount: {
+    description: "The Number of players participating in the given game",
+    type: SimpleSchema.Integer,
+    min: 1,
+    max: 100
+  },
+  neighborsCount: {
+    description: "The Number of connections for each player",
+    type: SimpleSchema.Integer,
+    min: 0,
+    max: 12,
+    optional: false
+  },
+};
+```
+
+Now, if you navigate to `http://localhost:3000/admin/conditions` you will see that there is an additional condition called `neighborsCount`. Let's add value to it so we have the following three levels:
+
+![neighborsCount][neighborsCount-img]
+
+[neighborsCount-img]: ./img/neighborsCount.png
 
 
+Now, when we go to the ***Treatments*** in the admin navigation part, we can see how treatments actually work when we have more than one condition. Let's add the three treatments that we are interested in studying:
+1. solo players (i.e., group of size 1) with no neighbors
+2. group of size 4 with 1 neighbor
+3. group of size 4 with 3 neighbors (fully connected network)
+
+You should have something like this:
+
+![neibhorTreatments][neibhorTreatments-img]
+
+[neibhorTreatments-img]: ./img/neibhorTreatments.png
+
+As you can see, you can easy ***cross your conditions*** (i.e., two conditions are crossed if every level of one occurs with every level of the other in the experiment) or ***nest nest your conditions*** (i.e., A condition "A" is nested within another condition "B" if the levels or values of "A" are different for every level or value of "B"). Note: in the future version of Empirica, we will probably rename ***conditions*** to ***factors*** as recommended by our advisors.
 
 
+## Adding the task information
+Now, let's add some task data. In our case, the task is the correlation plots. So, in `constants.js` let's add the following task information: 
 
-
+```
+export const taskData = [
+  {
+    _id: 0,
+    correctAnswer: 0.09,
+    path: "/games/task/tasks/0.png",
+    
+  },
+  {
+    _id: 1,
+    correctAnswer: 0.78,
+    path:  "/games/task/tasks/1.png"
+  },
+  {
+    _id: 2,
+    correctAnswer: 0.91,
+    path:  "/games/task/tasks/2.png",
+  },
+  {
+    _id: 3,
+    correctAnswer: 0.47,
+    path:  "/games/task/tasks/3.png",
+  },
+  {
+    _id: 4,
+    correctAnswer: 0.08,
+    path:  "/games/task/tasks/4.png",
+  },
+  {
+    _id: 5,
+    correctAnswer: 0.27,
+    path:  "/games/task/tasks/5.png",
+  }
+];
+```
