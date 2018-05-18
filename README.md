@@ -30,7 +30,7 @@ All the code for the project that you will build during the tutorial can be foun
 
 First of all, You will need Meteor, for which you can find installation instruction [here](https://meteor.com/install).
 
-Then, you will need to clone Empirica's default app that comes bundled when you clone or fork the repository. From the terminal:
+Then, you will need to clone Empirica's default app that comes bundled when you clone or fork the repository. We reccomend forking by going to the [Empirica repo](https://github.com/empiricaly/empirica) and then from the top-right corner of the page, click Fork. If you want to directly clone the repo then run this command from the terminal.
 ```
 git clone https://github.com/empiricaly/empirica.git
 ```
