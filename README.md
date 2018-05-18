@@ -324,7 +324,7 @@ export default class Round extends React.Component {
 ### Displaying the task
 We need to display the correct task (i.e., correlation plot) in each round. So let's go to `/imports/experiment/client/game/TaskStimulus.jsx` and ensure that we display the task path from the round data. To make things pretty, we will make the scatter plot transparent during the round outcome stage
 
-```react
+```javascript
 export default class TaskStimulus extends React.Component {
   render() {
     const { round, stage } = this.props;
@@ -349,7 +349,7 @@ export default class TaskStimulus extends React.Component {
 
 ### Customizing the task response
 In the guess the correlation game, the slider is the main way of inputting data from the player. However, we want to show the correct answer and disable the slider during the round outcome stage. While this block of code might look involved, it is not! Just small changes to the current default slider such that it looks like this:
-```react
+```javascript
 import { Slider } from "@blueprintjs/core";
 import React from "react";
 
